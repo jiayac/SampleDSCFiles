@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  resources:
+    - resource: GitDsc/GitClone
+      directives:
+        description: Pull Git Repo
+        allowPrerelease: true
+      settings:
+        HttpsUrl: https://github.com/microsoft/vscode
+        RemoteName: vscode
+        RootDirectory: C:\Users\jiayanchen\Downloads
+  configurationVersion: 0.2.0
