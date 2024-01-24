@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  resources:      
+    - resource: PSDscResources/Script
+      id: myAppConfig
+      directives:
+        description: Configure My App
+        allowPrerelease: true
+      settings:
+        GetScript: |
+          # Your custom PowerShell code to check app configuration
+        TestScript: |
+          return $false
+        SetScript: |
+          winget install Microsoft.Teams
+          winget install --id Microsoft.Powershell --source winget
+          winget install --id 7zip.7zip --source winget
+          winget install Microsoft.VisualStudioCode
+          winget install --id GitHub.cli --source winget
+          winget install --id CoreyButler.NVMforWindows --source winget
+          wsl --install
+  configurationVersion: 0.2.0
