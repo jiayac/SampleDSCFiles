@@ -42,36 +42,12 @@ properties:
           Invoke-WebRequest -Uri $url -OutFile $dest
           Start-Sleep -Seconds 5
 
-    ### Unzip & Install RDAccess Add-On from ZIP
-    ### -------------------------------------
-    - resource: PSDscResources/Script
-      id: InstallNVDAAddOnZIPPackage
-      dependsOn:
-        - InstallNVDA
-      settings:
-        GetScript: |
-          $path = "$env:APPDATA\nvda\addons"
-          @{
-            Result = $((Test-Path -Path $path) -eq $true)
-          }
-        TestScript: |
-          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
-          (Test-Path -Path $file) -ne "True"
-        SetScript: |
-
-          if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
-            Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
-          }
-          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
-          $dest = "$env:APPDATA\nvda\addons\"
-          Expand-Archive $file -DestinationPath $dest
-
     ### Restart and close NVDA Process
     ### -------------------------------------
     - resource: PSDscResources/Script
       id: RestartNVDA
       dependsOn:
-        - InstallNVDAAddOnZIPPackage
+        - DownloadRDAccessAddOn
       settings:
         GetScript: |
           @{
@@ -90,6 +66,30 @@ properties:
           Start-Sleep -Seconds 5
           Write-Host "NVDA is running, Stopping NVDA"
           Stop-Process -Name 'NVDA' -Force 
+
+    ### Unzip & Install RDAccess Add-On from ZIP
+    ### -------------------------------------
+    - resource: PSDscResources/Script
+      id: InstallNVDAAddOnZIPPackage
+      dependsOn:
+        - RestartNVDA
+      settings:
+        GetScript: |
+          $path = "$env:APPDATA\nvda\addons"
+          @{
+            Result = $((Test-Path -Path $path) -eq $true)
+          }
+        TestScript: |
+          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
+          (Test-Path -Path $file) -ne "True"
+        SetScript: |
+
+          if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
+            Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
+          }
+          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
+          $dest = "$env:APPDATA\nvda\addons\"
+          Expand-Archive $file -DestinationPath $dest
 
     ### Update NVDA.ini File: operatingMode = 1
     ## -------------------------------------
