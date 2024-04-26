@@ -96,7 +96,7 @@ properties:
     - resource: PSDscResources/Script
       id: SetNVDAPreferences
       dependsOn:
-        - RestartNVDA
+        - InstallNVDAAddOnZIPPackage
       settings:
         GetScript: |
           @{
@@ -124,7 +124,7 @@ properties:
           if (-not $rdAccessFound) {
               $newLines += "[rdAccess]"
               $newLines += "  operatingMode = 1"
-              $newLines += "	recoverRemoteSpeech = True"
+              $newLines += "  recoverRemoteSpeech = True"
               $newLines += "  driverSettingsManagement = False"
               $newLines += "  persistentRegistration = False"
               $newLines += "  enableRemoteDesktopSupport = True"
