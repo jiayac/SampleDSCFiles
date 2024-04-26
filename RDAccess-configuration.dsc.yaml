@@ -66,35 +66,33 @@ properties:
           $dest = "$env:APPDATA\nvda\addons\"
           Expand-Archive $file -DestinationPath $dest
 
-    # ### Restart NVDA Process
-    # ### -------------------------------------
-    # - resource: PSDscResources/Script
-    #   id: ReStartNVDA
-    #   dependsOn:
-    #     - InstallNVDAAddOnZIPPackage
-    #   settings:
-    #     GetScript: |
-    #       @{
-    #         Result = ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) -eq $true
-    #       }
-    #     TestScript: |
-    #       $false
-    #     SetScript: |
-    #       Start-Sleep -Seconds 5
-    #       if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
-    #         Write-Host "NVDA is running, Stopping NVDA"
-    #         Stop-Process -Name 'NVDA' -Force
-    #       }
-    #       Write-Host "NVDA is not running, Starting NVDA"
-    #       Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
-    #       Start-Sleep -Seconds 5
+    ### Close NVDA Process
+    ### -------------------------------------
+    - resource: PSDscResources/Script
+      id: CloseNVDA
+      dependsOn:
+        - InstallNVDAAddOnZIPPackage
+      settings:
+        GetScript: |
+          @{
+            Result = ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) -eq $true
+          }
+        TestScript: |
+          $false
+        SetScript: |
+          Start-Sleep -Seconds 5
+          if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
+            Write-Host "NVDA is running, Stopping NVDA"
+            Stop-Process -Name 'NVDA' -Force
+          }
+          Start-Sleep -Seconds 5
 
     ### Update NVDA.ini File: operatingMode = 1
     ## -------------------------------------
     - resource: PSDscResources/Script
       id: SetNVDAPreferences
-      # dependsOn:
-      #   - ReStartNVDA
+      dependsOn:
+        - ReStartNVDA
       settings:
         GetScript: |
           @{
