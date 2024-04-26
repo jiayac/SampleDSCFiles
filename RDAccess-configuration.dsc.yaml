@@ -40,7 +40,7 @@ properties:
               New-Item -Path $directory -ItemType "directory" -ErrorAction SilentlyContinue
           }
           Invoke-WebRequest -Uri $url -OutFile $dest
-          Start-Sleep -Seconds 20
+          Start-Sleep -Seconds 5
 
     ### Unzip & Install RDAccess Add-On from ZIP
     ### -------------------------------------
@@ -50,51 +50,51 @@ properties:
         - InstallNVDA
       settings:
         GetScript: |
-          $path = "$env:APPDATA\nvda\addons\rdAccess"
+          $path = "$env:APPDATA\nvda\addons"
           @{
             Result = $((Test-Path -Path $path) -eq $true)
           }
         TestScript: |
-          $file = "C:\Repo\azure-devcenter-customizations-tests\Microsoft.WinGet.Configuration\rdAccess.zip"
+          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
           (Test-Path -Path $file) -ne "True"
         SetScript: |
 
           if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
             Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
           }
-          $file = "C:\Repo\azure-devcenter-customizations-tests\Microsoft.WinGet.Configuration\rdAccess.zip"
+          $file = "$env:APPDATA\nvda\addons\rdAccess.zip"
           $dest = "$env:APPDATA\nvda\addons\"
           Expand-Archive $file -DestinationPath $dest
 
-    ### Restart NVDA Process
-    ### -------------------------------------
-    - resource: PSDscResources/Script
-      id: ReStartNVDA
-      dependsOn:
-        - InstallNVDAAddOnZIPPackage
-      settings:
-        GetScript: |
-          @{
-            Result = ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) -eq $true
-          }
-        TestScript: |
-          $false
-        SetScript: |
-          Start-Sleep -Seconds 20
-          if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
-            Write-Host "NVDA is running, Stopping NVDA"
-            Stop-Process -Name 'NVDA' -Force
-          }
-          Write-Host "NVDA is not running, Starting NVDA"
-          Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
-          Start-Sleep -Seconds 20
+    # ### Restart NVDA Process
+    # ### -------------------------------------
+    # - resource: PSDscResources/Script
+    #   id: ReStartNVDA
+    #   dependsOn:
+    #     - InstallNVDAAddOnZIPPackage
+    #   settings:
+    #     GetScript: |
+    #       @{
+    #         Result = ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) -eq $true
+    #       }
+    #     TestScript: |
+    #       $false
+    #     SetScript: |
+    #       Start-Sleep -Seconds 5
+    #       if ((Get-Process -Name 'NVDA' -ErrorAction SilentlyContinue) -ne $null) {
+    #         Write-Host "NVDA is running, Stopping NVDA"
+    #         Stop-Process -Name 'NVDA' -Force
+    #       }
+    #       Write-Host "NVDA is not running, Starting NVDA"
+    #       Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
+    #       Start-Sleep -Seconds 5
 
     ### Update NVDA.ini File: operatingMode = 1
     ## -------------------------------------
     - resource: PSDscResources/Script
       id: SetNVDAPreferences
-      dependsOn:
-        - ReStartNVDA
+      # dependsOn:
+      #   - ReStartNVDA
       settings:
         GetScript: |
           @{
@@ -104,6 +104,7 @@ properties:
           (Get-Content -Path "$env:APPDATA\nvda\nvda.ini" -ErrorAction SilentlyContinue | Where-Object { $_ -match "^operatingMode=1$" }) -eq "True"
 
         SetScript: |
+
           $file = "$env:APPDATA\nvda\nvda.ini"
 
           $lines = Get-Content -Path $file
@@ -114,13 +115,18 @@ properties:
               $newLines += $lines[$i]
               if ($lines[$i] -match "\[rdAccess\]") {
                   $rdAccessFound = $true
-                  $newLines += "        operatingMode = 1"
+                  $newLines += "  operatingMode = 1"
               }
           }
 
           if (-not $rdAccessFound) {
               $newLines += "[rdAccess]"
-              $newLines += "        operatingMode = 1"
+              $newLines += "  operatingMode = 1"
+              $newLines += "	recoverRemoteSpeech = True"
+              $newLines += "  driverSettingsManagement = False"
+              $newLines += "  persistentRegistration = False"
+              $newLines += "  enableRemoteDesktopSupport = True"
+              $newLines += "  enableCitrixSupport = False"
           }
 
           $newLines | Set-Content -Path $file
