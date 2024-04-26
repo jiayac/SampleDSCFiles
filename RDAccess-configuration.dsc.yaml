@@ -20,8 +20,8 @@ properties:
     # # ### -------------------------------------
     - resource: PSDscResources/Script
       id: DownloadRDAccessAddOn
-      # dependsOn:
-      #   - InstallNVDA
+      dependsOn:
+        - InstallNVDA
       directives:
         description: Download RDAccess Add-On File from GitHub
         allowPrerelease: true
@@ -66,10 +66,10 @@ properties:
           $dest = "$env:APPDATA\nvda\addons\"
           Expand-Archive $file -DestinationPath $dest
 
-    ### Close NVDA Process
+    ### Restart and close NVDA Process
     ### -------------------------------------
     - resource: PSDscResources/Script
-      id: CloseNVDA
+      id: RestartNVDA
       dependsOn:
         - InstallNVDAAddOnZIPPackage
       settings:
@@ -85,14 +85,18 @@ properties:
             Write-Host "NVDA is running, Stopping NVDA"
             Stop-Process -Name 'NVDA' -Force
           }
+          Write-Host "NVDA is not running, Starting NVDA"
+          Start-Process 'C:\Program Files (x86)\NVDA\nvda.exe'
           Start-Sleep -Seconds 5
+          Write-Host "NVDA is running, Stopping NVDA"
+          Stop-Process -Name 'NVDA' -Force 
 
     ### Update NVDA.ini File: operatingMode = 1
     ## -------------------------------------
     - resource: PSDscResources/Script
       id: SetNVDAPreferences
       dependsOn:
-        - ReStartNVDA
+        - RestartNVDA
       settings:
         GetScript: |
           @{
