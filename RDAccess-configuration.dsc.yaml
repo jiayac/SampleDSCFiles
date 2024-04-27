@@ -113,23 +113,13 @@ properties:
           $newLines = @()
           $rdAccessFound = $false
 
-          for ($i = 0; $i -lt $lines.Length; $i++) {
-              $newLines += $lines[$i]
-              if ($lines[$i] -match "\[rdAccess\]") {
-                  $rdAccessFound = $true
-                  $newLines += "  operatingMode = 1"
-              }
-          }
-
-          if (-not $rdAccessFound) {
-              $newLines += "[rdAccess]"
-              $newLines += "  operatingMode = 1"
-              $newLines += "  recoverRemoteSpeech = True"
-              $newLines += "  driverSettingsManagement = False"
-              $newLines += "  persistentRegistration = False"
-              $newLines += "  enableRemoteDesktopSupport = True"
-              $newLines += "  enableCitrixSupport = False"
-          }
+          $newLines += "[rdAccess]"
+          $newLines += "  operatingMode = 1"
+          $newLines += "  recoverRemoteSpeech = True"
+          $newLines += "  driverSettingsManagement = False"
+          $newLines += "  persistentRegistration = False"
+          $newLines += "  enableRemoteDesktopSupport = True"
+          $newLines += "  enableCitrixSupport = False"
 
           $newLines | Set-Content -Path $file
 
