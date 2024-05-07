@@ -16,6 +16,18 @@ properties:
         source: winget
         ensure: Present
 
+    ### Install: Freedom Scientific JAWS 2023
+    ### -------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: JAWS
+      directives:
+        description: Freedom Scientific JAWS 2023
+        allowPrerelease: true
+      settings:
+        id: FreedomScientific.JAWS.2023
+        source: winget
+        ensure: Present
+
     # ### Download: RDAccess Add-On ZIP File from GitHub ### ZIP FILE LOCATION???
     # # ### -------------------------------------
     - resource: PSDscResources/Script
