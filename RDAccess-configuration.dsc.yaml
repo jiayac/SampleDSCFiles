@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
 properties:
   ########################################
-  ### RESOURCES: NVDA and RDAccess Add-On
+  ### RESOURCES: NVDA and RDAccess Add-On, JAWS 2023
   ########################################
   resources:
     ### Install: NVAccess.NVDA
