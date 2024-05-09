@@ -135,11 +135,11 @@ properties:
 
           $newLines | Set-Content -Path $file
 
-    - resource: Microsoft.Windows.Setting.Accessibility/TextSize
+    - resource: Microsoft.Windows.Accessibility/Text
       directives:
         description: Set Windows text size
       settings:
-        Size: Medium # 'Small', 'Medium', 'Large', 'ExtraLarge'
+        Size: Large # 'Small', 'Medium', 'Large', 'ExtraLarge'
 
   configurationVersion: 0.2.0
 ### Run the following command to invoke this configuration:
