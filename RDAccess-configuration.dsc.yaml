@@ -138,6 +138,7 @@ properties:
     - resource: Microsoft.Windows.Setting.Accessibility/Text
       directives:
         description: Set Windows text size
+        allowPrerelease: true
       settings:
         Size: Large # 'Small', 'Medium', 'Large', 'ExtraLarge'
 
