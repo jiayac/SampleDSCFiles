@@ -135,7 +135,7 @@ properties:
 
           $newLines | Set-Content -Path $file
 
-    - resource: Microsoft.Windows.Accessibility/Text
+    - resource: Microsoft.Windows.Setting.Accessibility/Text
       directives:
         description: Set Windows text size
       settings:
