@@ -1,0 +1,8 @@
+$schema: "1.0"
+name: devbox-customization
+tasks:
+  - name: winget
+    parameters:
+      downloadUrl: 'https://raw.githubusercontent.com/jiayac/SampleDSCFiles/main/visualstudio.dsc.yaml'
+      configurationFile: 'C:\WinGetConfig\visualstudio.dsc.yaml'
+      runAsUser: true
