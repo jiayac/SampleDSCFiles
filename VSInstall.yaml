@@ -11,6 +11,30 @@ properties:
       settings:
         id: Microsoft.VisualStudio.2022.Professional.Preview
 
+     ### Stop Vs 2022 preview if it is running
+    - resource: PSDscResources/Script
+      id: RestartVS    
+      settings:
+        GetScript: |
+          @{
+           Result = ((Get-Process -Name 'devenv' -ErrorAction SilentlyContinue) -ne $null) -eq $true
+          }
+        TestScript: |
+          $false
+        SetScript: |
+          Start-Sleep -Seconds 15
+          if ((Get-Process -Name 'devenv' -ErrorAction SilentlyContinue) -ne $null) {
+            Write-Host "Visual Studio 2022 Professional Preview is running, Stopping it."
+            Stop-Process -Name 'devenv' -Force
+          }
+          Write-Host "Visual Studio 2022 Professional Preview is not running, Starting it"
+          $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\devenv.exe"
+          Start-Process $vsPath
+          Start-Sleep -Seconds 15
+          Write-Host "Visual Studio 2022 Professional Preview is running, Stopping it"
+          Stop-Process -Name 'devenv' -Force
+
+
      ### Set RegEdit value to enable Vs 2022 preview
      ### C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE>vsregedit set local HKCU FeatureFlags\VS\Core\NewSettingsExperience Value dword 1
     - resource: PSDscResources/Script
