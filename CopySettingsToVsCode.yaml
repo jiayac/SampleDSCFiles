@@ -1,0 +1,48 @@
+---
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.Winget.DSC/WingetPackage
+      directives:
+        description: Install Visual Studio Code
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudioCode
+    - resource: PSDscResources/Script
+      directives:
+        description: Copy Settings Json
+        allowPrerelease: true
+      settings:
+        GetScript: |
+          $destinationDir = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ApplicationData)
+          $destinationPath = Join-Path -Path $destinationDir -ChildPath "Code\User\settings.json"
+          Test-Path -Path $destinationPath
+        TestScript: |
+          $destinationDir = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ApplicationData)
+          $destinationPath = Join-Path -Path $destinationDir -ChildPath "Code\User\settings.json"
+          Test-Path -Path $destinationPath
+          $false
+        SetScript: |
+          $url = "https://raw.githubusercontent.com/jiayac/SampleDSCFiles/main/vscode/settings.json"
+          $filename = Split-Path -Path $url -Leaf
+          $dest = "$env:USERPROFILE\Downloads\TestCopyFromRemote\$filename"
+
+          if (-not (Test-Path -Path $dest)) {
+              $directory = Split-Path -Path $dest -Parent
+              New-Item -Path $directory -ItemType Directory -Force
+          }
+
+          Invoke-WebRequest -Uri $url -OutFile $dest
+          Start-Sleep -Seconds 5
+
+          $sourcePath = $dest
+
+          $destinationDir = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ApplicationData)
+          $destinationPath = Join-Path -Path $destinationDir -ChildPath "Code\User\settings.json"
+
+          if (-not (Test-Path -Path $destinationDir)) {
+            New-Item -ItemType Directory -Path $destinationDir -Force
+          }
+
+          # Copy the file, overwriting if it exists
+          Copy-Item -Path $sourcePath -Destination $destinationPath -Force
