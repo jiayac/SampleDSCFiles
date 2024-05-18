@@ -85,7 +85,7 @@ properties:
 
      ### Stop Vs 2022 preview if it is running
     - resource: PSDscResources/Script
-      id: RestartVS    
+      id: RestartVSAgain    
       settings:
         GetScript: |
           @{
