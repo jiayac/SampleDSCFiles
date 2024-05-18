@@ -83,6 +83,29 @@ properties:
             return @{ Result = $false }
           }
 
+     ### Stop Vs 2022 preview if it is running
+    - resource: PSDscResources/Script
+      id: RestartVS    
+      settings:
+        GetScript: |
+          @{
+           Result = ((Get-Process -Name 'devenv' -ErrorAction SilentlyContinue) -ne $null) -eq $true
+          }
+        TestScript: |
+          $false
+        SetScript: |
+          Start-Sleep -Seconds 15
+          if ((Get-Process -Name 'devenv' -ErrorAction SilentlyContinue) -ne $null) {
+            Write-Host "Visual Studio 2022 Professional Preview is running, Stopping it."
+            Stop-Process -Name 'devenv' -Force
+          }
+          Write-Host "Visual Studio 2022 Professional Preview is not running, Starting it"
+          $vsPath = "C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\devenv.exe"
+          Start-Process $vsPath
+          Start-Sleep -Seconds 15
+          Write-Host "Visual Studio 2022 Professional Preview is running, Stopping it"
+          Stop-Process -Name 'devenv' -Force
+
 
      ### Copy settings file from remote And place at all AppData\Local\Microsoft\VisualStudio\17.* folders. It overrides the file if it exists
     - resource: PSDscResources/Script
