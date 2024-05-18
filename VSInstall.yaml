@@ -128,7 +128,6 @@ properties:
         TestScript: |
           $false
         SetScript: |
-          Start-Sleep -Seconds 60
           $url = "https://raw.githubusercontent.com/jiayac/SampleDSCFiles/main/visualstudio/settings.json"
           $filename = Split-Path -Path $url -Leaf
           $localPathForRemoteFile = "$env:USERPROFILE\Downloads\VSSettingsFileFromRemote\$filename"
